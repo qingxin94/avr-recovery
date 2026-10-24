@@ -3,10 +3,20 @@
 # aera_avr.mk - product config for Lenovo Legion Y70 (avr)
 #
 
+# ─── Product inheritance chain (aligned with myron/canoe proven template) ───
+# base.mk pulls in base_vendor.mk which supplies the recovery variant modules
+# (init_second_stage.recovery, adbd.recovery, linker.recovery, ...). Without it
+# $(TARGET_ROOT_OUT) is never created and ramdisk assembly fails with
+# "rsync: link_stat .../root failed: No such file or directory".
+$(call inherit-product, $(SRC_TARGET_DIR)/product/base.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit_only.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/compression.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
 
 # Inherit AERA Recovery common config
 $(call inherit-product, vendor/twrp/config/common.mk)
+
+$(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
 # Inherit device makefile
 $(call inherit-product, device/lenovo/avr/device.mk)
