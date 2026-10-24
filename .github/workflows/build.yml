@@ -62,8 +62,8 @@ jobs:
       run: |
         free -h
         df -h /
-        # 4G swap（-j1 单线程够用，省 12GB 磁盘给编译）
-        sudo dd if=/dev/zero of=/mnt/swapfile_extra bs=1M count=4096 status=none
+        # 16G swap（7G物理+3G自带+16G新增=26G，够soong bootstrap）
+        sudo dd if=/dev/zero of=/mnt/swapfile_extra bs=1M count=16384 status=none
         sudo chmod 600 /mnt/swapfile_extra
         sudo mkswap /mnt/swapfile_extra
         sudo swapon /mnt/swapfile_extra
@@ -105,11 +105,11 @@ jobs:
         source build/envsetup.sh
         lunch twrp_avr-bp2a-eng
         export SOONG_UI_MEMORY=4G
-        export GOMAXPROCS=4
+        export GOMAXPROCS=2
         export ANDROID_JAVA_OPTS="-Xmx4g -Xms1g"
         export GOMEMLIMIT=12GiB
         export GOGC=50
-        mka adbd recoveryimage -j$(nproc)
+        mka adbd recoveryimage -j1
 
     - name: Upload recovery image
       uses: actions/upload-artifact@v4
