@@ -25,13 +25,14 @@ jobs:
     - name: Create swap space
       run: |
         free -h
-        df -h /mnt
-        # 无条件追加24G swap（runner自带3G不够，多swap可共存）
-        sudo dd if=/dev/zero of=/mnt/swapfile_extra bs=1M count=24576 status=none
+        df -h /
+        # 追加16G swap（避免24G占满磁盘；总内存=15G物理+3G自带+16G新增=34G）
+        sudo dd if=/dev/zero of=/mnt/swapfile_extra bs=1M count=16384 status=none
         sudo chmod 600 /mnt/swapfile_extra
         sudo mkswap /mnt/swapfile_extra
         sudo swapon /mnt/swapfile_extra
         free -h
+        df -h /
 
     - name: Install repo
       run: |
@@ -50,6 +51,9 @@ jobs:
         mkdir -p aera-src && cd aera-src
         repo init -u https://github.com/AERA-Recovery/android_manifest.git -b aera-16.0 --depth=1
         repo sync -c --force-sync --no-clone-bundle --no-tags -j4
+        # 清理git对象省磁盘
+        find . -name ".git" -type d -exec git -C {} gc --aggressive --prune=now \; 2>/dev/null || true
+        df -h /
 
     - name: Copy device tree
       run: |
