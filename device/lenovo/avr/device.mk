@@ -25,5 +25,6 @@ PRODUCT_COPY_FILES += \
     device/lenovo/avr/modules/mmi_info.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/mmi_info.ko \
     device/lenovo/avr/modules/sensors_class.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/sensors_class.ko \
     device/lenovo/avr/modules/mmi_relay.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/mmi_relay.ko \
+    device/lenovo/avr/modules/panel_event_notifier.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/panel_event_notifier.ko \
     device/lenovo/avr/modules/touchscreen_mmi.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/touchscreen_mmi.ko \
     device/lenovo/avr/modules/goodix_brl_thp.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/goodix_brl_thp.ko
