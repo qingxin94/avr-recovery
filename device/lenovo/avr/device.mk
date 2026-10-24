@@ -18,7 +18,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.product.manufacturer=Motorola Mobility \
     ro.build.product=avr \
 
-# Copy vendor modules into recovery ramdisk (81 modules, full BFS dependency closure)
+# Copy vendor modules into recovery ramdisk (82 modules, full BFS dependency closure)
 # Loaded by AERA framework via AERA_LOAD_VENDOR_MODULES (see BoardConfig.mk)
 PRODUCT_COPY_FILES += \
     device/lenovo/avr/modules/cmd-db.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/cmd-db.ko \
@@ -87,7 +87,7 @@ PRODUCT_COPY_FILES += \
     device/lenovo/avr/modules/qpnp_adaptive_charge.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/qpnp_adaptive_charge.ko \
     device/lenovo/avr/modules/smem-mailbox.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/smem-mailbox.ko \
     device/lenovo/avr/modules/modules.dep:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/modules.dep \
-    device/lenovo/avr/modules/modules.load:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/modules.load
+    device/lenovo/avr/modules/modules.load:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/modules.load \
     device/lenovo/avr/modules/cnss_utils.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/cnss_utils.ko \
     device/lenovo/avr/modules/socinfo.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/socinfo.ko \
     device/lenovo/avr/modules/sched-walt.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/sched-walt.ko \

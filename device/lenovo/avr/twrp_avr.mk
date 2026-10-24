@@ -34,7 +34,7 @@ PRODUCT_BUILD_PROP_OVERRIDES += \
     PRODUCT_NAME=avr_cn \
     PRIVATE_BUILD_DESC="avr_cn-user 16 W3WWL36.65-11-18 12710e-0d97a:user/release-keys"
 
-BUILD_FINGERPRINT := "Lenovo/avr_cn/avr:16/W3WWL36.65-11-18/12710e-0d97a:user/release-keys"
+BUILD_FINGERPRINT := Lenovo/avr_cn/avr:16/W3WWL36.65-11-18/12710e-0d97a:user/release-keys
 
 # ─── AERA device config (aligned with myron/canoe proven template) ───
 # Kernel and recovery behavior

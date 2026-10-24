@@ -11,6 +11,7 @@ ro.boot.hardware=qcom
 
 # USB — UFS controller confirmed from iomem: 1d84000.ufshc; DWC3 at a600000
 ro.boot.bootdevice=1d84000.ufshc
+ro.boot.usbcontroller=a600000.dwc3
 sys.usb.configfs=1
 
 # Dynamic partitions / Virtual A/B
