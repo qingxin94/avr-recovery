@@ -93,8 +93,11 @@ jobs:
         mkdir -p .repo/local_manifests
         curl -sL https://raw.githubusercontent.com/AERA-Recovery/android_manifest/aera-16.0/remove-minimal.xml \
           -o .repo/local_manifests/remove-minimal.xml
-        # 删掉manifest里已不存在的项目（repo sync会报错）
-        sed -i '/bootable\/deprecated-ota/d' .repo/local_manifests/remove-minimal.xml
+        # 自动过滤掉manifest里已不存在的项目（repo sync会报错）
+        grep -oP 'path="[^"]*"' .repo/manifests/default.xml | sed 's/path="//;s/"//' | sort -u > /tmp/actual.txt
+        grep -oP 'path="[^"]*"' .repo/local_manifests/remove-minimal.xml | sed 's/path="//;s/"//' | while read p; do
+          grep -q "^$p$" /tmp/actual.txt || sed -i "\|path=\"$p\"|d" .repo/local_manifests/remove-minimal.xml
+        done
         # 额外删：更激进（从checkout目录复制本地manifest）
         cp $GITHUB_WORKSPACE/.repo/local_manifests/remove-minimal2.xml .repo/local_manifests/
         repo sync -c --force-sync --no-clone-bundle --no-tags -j4
