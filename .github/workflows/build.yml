@@ -1,0 +1,60 @@
+name: Build AERA Recovery for avr
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 240
+
+    steps:
+    - name: Checkout device tree
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt update -y
+        sudo apt install -y git gnupg flex bison build-essential zip curl zlib1g-dev \
+          gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses-dev x11proto-core-dev \
+          libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig \
+          openjdk-17-jdk python3 python3-pip rsync python3-protobuf
+
+    - name: Install repo
+      run: |
+        mkdir -p ~/bin
+        curl -sL https://storage.googleapis.com/git-repo-downloads/repo -o ~/bin/repo
+        chmod +x ~/bin/repo
+        echo "$HOME/bin" >> $GITHUB_PATH
+
+    - name: Configure git
+      run: |
+        git config --global user.email "builder@github.com"
+        git config --global user.name "GitHub Actions"
+
+    - name: Sync AERA source
+      run: |
+        mkdir -p aera-src && cd aera-src
+        repo init -u https://github.com/AERA-Recovery/android_manifest.git -b aera-16.0 --depth=1
+        repo sync -c --force-sync --no-clone-bundle --no-tags -j4
+
+    - name: Copy device tree
+      run: |
+        mkdir -p aera-src/device/lenovo/avr
+        cp -r device/lenovo/avr/* aera-src/device/lenovo/avr/
+
+    - name: Build recovery
+      run: |
+        cd aera-src
+        source build/envsetup.sh
+        lunch twrp_avr-bp2a-eng
+        mka adbd recoveryimage -j4
+
+    - name: Upload recovery image
+      uses: actions/upload-artifact@v4
+      with:
+        name: avr-recovery-img
+        path: aera-src/out/target/product/avr/recovery.img
+        retention-days: 7

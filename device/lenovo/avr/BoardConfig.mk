@@ -1,0 +1,135 @@
+#
+# Copyright (C) 2026 AERA Recovery
+#
+# BoardConfig for Lenovo Legion Y70 (2026) - codename: avr
+# SoC: Qualcomm SM8845 (Snapdragon 8 Elite Gen 5)
+# Kernel: 6.12.58-android16
+#
+
+# Architecture
+TARGET_ARCH := arm64
+TARGET_ARCH_VARIANT := armv9-a
+TARGET_CPU_ABI := arm64-v8a
+TARGET_CPU_VARIANT := generic
+TARGET_2ND_ARCH :=
+TARGET_2ND_CPU_ABI :=
+
+# Platform
+TARGET_BOARD_PLATFORM := pineapple
+BOARD_USES_QCOM_HARDWARE := true
+
+# Partition copy paths
+TARGET_COPY_OUT_VENDOR := vendor
+TARGET_COPY_OUT_VENDOR_RAMDISK := vendor_ramdisk
+TARGET_COPY_OUT_PRODUCT := product
+TARGET_COPY_OUT_SYSTEM_EXT := system_ext
+TARGET_COPY_OUT_ODM := odm
+TARGET_COPY_OUT_VENDOR_DLKM := vendor_dlkm
+TARGET_COPY_OUT_SYSTEM_DLKM := system_dlkm
+BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := erofs
+
+# Boot image
+BOARD_BOOT_HEADER_VERSION := 4
+BOARD_BOOTIMAGE_PARTITION_SIZE := 100663296       # 96 MB
+BOARD_INIT_BOOT_HEADER_VERSION := 4
+BOARD_INIT_BOOT_IMAGE_PARTITION_SIZE := 8388608  # 8 MB
+BOARD_VENDOR_BOOT_HEADER_VERSION := 4
+BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 100663296  # 96 MB
+BOARD_RECOVERYIMAGE_PARTITION_SIZE := 134217728  # 128 MB
+BOARD_DTBOIMG_PARTITION_SIZE := 75497472         # 72 MB
+
+# Page size
+BOARD_PAGE_SIZE := 4096
+BOARD_KERNEL_PAGESIZE := 4096
+
+# Kernel - GKI device, kernel lives in boot partition
+BOARD_KERNEL_IMAGE_NAME := Image
+BOARD_INCLUDE_DTB_IN_BOOTIMG := false
+
+# A/B partition layout
+AB_OTA_UPDATER := true
+AB_OTA_PARTITIONS := \
+    boot \
+    init_boot \
+    vendor_boot \
+    dtbo \
+    recovery \
+    vbmeta \
+    vbmeta_system \
+    super \
+
+# Dynamic partitions (super)
+BOARD_SUPER_PARTITION_SIZE := 16441663488  # ~15.3 GB (36 sparse chunks)
+BOARD_SUPER_PARTITION_GROUPS := qti_dynamic_partitions
+BOARD_QTI_DYNAMIC_PARTITIONS_SIZE := 16437469184  # minus metadata overhead
+BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := \
+    system \
+    system_ext \
+    product \
+    vendor \
+    vendor_dlkm \
+    system_dlkm \
+    odm \
+
+# File systems
+BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_VENDOR_DLKMIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_SYSTEM_DLKMIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_ODMIMAGE_FILE_SYSTEM_TYPE := erofs
+USERDATAIMAGE_FILE_SYSTEM_TYPE := f2fs
+METADATAIMAGE_FILE_SYSTEM_TYPE := f2fs
+
+# FBE / encryption
+BOARD_USES_METADATA_PARTITION := true
+BOARD_USES_FBE := true
+BOARD_FBE_V2 := true
+BOARD_USES_VOLD := true
+TARGET_USERIMAGES_USE_F2FS := true
+TARGET_USERIMAGES_USE_EXT4 := true
+
+# AVB
+BOARD_AVB_ENABLE := true
+BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS := --flags 2
+BOARD_AVB_RECOVERY_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
+BOARD_AVB_RECOVERY_ALGORITHM := SHA256_RSA4096
+BOARD_AVB_RECOVERY_ROLLBACK_INDEX := 0
+BOARD_AVB_RECOVERY_ROLLBACK_INDEX_LOCATION := 1
+
+# Recovery
+TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
+TARGET_RECOVERY_FSTAB := device/lenovo/avr/fstab.qcom
+RECOVERY_SDCARD_ON_DATA := true
+TW_INCLUDE_CRYPTO := true
+TW_INCLUDE_CRYPTO_FBE := true
+TW_INCLUDE_FBE_METADATA_DECRYPT := true
+TW_USE_FSCRYPT_POLICY := 2
+TW_INCLUDE_FUSE_EXFAT := true
+TW_INCLUDE_FUSE_NTFS := true
+
+# Screen (from vendor_boot cmdline: vfb 640x400 - this is recovery framebuffer)
+# Actual panel resolution needs confirmation; stock recovery uses vfb
+TW_THEME := portrait_hdpi
+TW_BRIGHTNESS_PATH := /sys/class/backlight/panel0-backlight/brightness
+TW_DEFAULT_BRIGHTNESS := 2048
+
+# USB
+TW_EXCLUDE_DEFAULT_USB_INIT := true
+TARGET_RECOVERY_USB_VENDOR_ID := 0x22b8
+TARGET_RECOVERY_USB_PRODUCT_ID_ADB := 0x2e81
+TARGET_RECOVERY_USB_PRODUCT_ID_FASTBOOT := 0x2e80
+
+# Misc
+BOARD_HAS_NO_SELECT_BUTTON := true
+BOARD_SUPPRESS_SECURE_ERASE := true
+RECOVERY_GRAPHICS_USE_LINELENGTH := true
+TW_NO_REBOOT_BOOTLOADER := false
+HAVE_SELINUX := true
+TW_USE_TOOLBOX := true
+
+# AERA Recovery specific
+AERA_DEVICE_NAME := avr
+AERA_DEVICE_MODEL := "Lenovo Legion Y70 (2026)"
+AERA_DEVICE_CODENAME := avr
