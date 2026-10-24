@@ -77,6 +77,12 @@ jobs:
         sudo chown $USER:$USER /mnt/work
         cd /mnt/work
         repo init -u https://github.com/AERA-Recovery/android_manifest.git -b aera-16.0 --depth=1
+        # 拉 remove-minimal.xml 到 local_manifests，砍掉 601 个 recovery 不需要的 project
+        mkdir -p .repo/local_manifests
+        curl -sL https://raw.githubusercontent.com/AERA-Recovery/android_manifest/aera-16.0/remove-minimal.xml \
+          -o .repo/local_manifests/remove-minimal.xml
+        echo "=== projects after minimal filter ==="
+        repo manifest -r | grep -c "<project"
         repo sync -c --force-sync --no-clone-bundle --no-tags -j4
         # 删掉所有 .git 目录，省 5-10GB 磁盘（--depth=1 后不再需要 git 历史）
         find /mnt/work -name .git -type d -prune -exec rm -rf {} + 2>/dev/null || true
