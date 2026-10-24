@@ -25,9 +25,9 @@ jobs:
     - name: Create swap space
       run: |
         free -h
-        df -h /
+        df -h /mnt
         if ! swapon --show | grep -q swap; then
-          sudo dd if=/dev/zero of=/mnt/swapfile bs=1M count=8192 status=none
+          sudo dd if=/dev/zero of=/mnt/swapfile bs=1M count=24576 status=none
           sudo chmod 600 /mnt/swapfile
           sudo mkswap /mnt/swapfile
           sudo swapon /mnt/swapfile
@@ -62,8 +62,10 @@ jobs:
         cd aera-src
         source build/envsetup.sh
         lunch twrp_avr-bp2a-eng
-        export SOONG_UI_MEMORY=8G
-        mka adbd recoveryimage -j2
+        export SOONG_UI_MEMORY=4G
+        export GOMAXPROCS=2
+        export ANDROID_JAVA_OPTS="-Xmx4g -Xms1g"
+        mka adbd recoveryimage -j1
 
     - name: Upload recovery image
       uses: actions/upload-artifact@v4
