@@ -89,6 +89,147 @@ jobs:
         sudo chown $USER:$USER /mnt/work
         cd /mnt/work
         repo init -u https://github.com/AERA-Recovery/android_manifest.git -b aera-16.0 --depth=1
+        # AERA官方remove-minimal.xml（删601个不用项目）
+        mkdir -p .repo/local_manifests
+        curl -sL https://raw.githubusercontent.com/AERA-Recovery/android_manifest/aera-16.0/remove-minimal.xml \
+          -o .repo/local_manifests/remove-minimal.xml
+        # 额外删：更激进——packages/art/dalvik/development/sdk/大量external
+        cat > .repo/local_manifests/remove-minimal2.xml << 'XMLEOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <remove-project path="packages/modules/ad_services" />
+  <remove-project path="packages/modules/Bluetooth" />
+  <remove-project path="packages/modules/ConnectedDevice" />
+  <remove-project path="packages/modules/Connectivity" />
+  <remove-project path="packages/modules/Contexthub" />
+  <remove-project path="packages/modules/Media" />
+  <remove-project path="packages/modules/Nearby" />
+  <remove-project path="packages/modules/NeuralNetworks" />
+  <remove-project path="packages/modules/OnDeviceIntelligence" />
+  <remove-project path="packages/modules/Permission" />
+  <remove-project path="packages/modules/ResCpl" />
+  <remove-project path="packages/modules/Runtime" />
+  <remove-project path="packages/modules/SafetyRegulator" />
+  <remove-project path="packages/modules/Scheduling" />
+  <remove-project path="packages/modules/StatsD" />
+  <remove-project path="packages/modules/Tethering" />
+  <remove-project path="packages/modules/TvProvider" />
+  <remove-project path="packages/modules/Wifi" />
+  <remove-project path="prebuilts/module_sdk" />
+  <remove-project path="external/python" />
+  <remove-project path="external/rust" />
+  <remove-project path="kernel/prebuilts" />
+  <remove-project path="external/trusty" />
+  <remove-project path="prebuilts/vndk" />
+  <remove-project path="hardware/nxp" />
+  <remove-project path="packages/screensavers" />
+  <remove-project path="packages/providers" />
+  <remove-project path="external/pandora" />
+  <remove-project path="tools/tradefederation" />
+  <remove-project path="tools/test" />
+  <remove-project path="tools/netsim" />
+  <remove-project path="tools/loganalysis" />
+  <remove-project path="tools/content_addressed_storage" />
+  <remove-project path="system/memory" />
+  <!-- 最激进删除：只保留编译必须的，其他全删 -->
+  <remove-project path="art" />
+  <remove-project path="dalvik" />
+  <remove-project path="development" />
+  <remove-project path="sdk" />
+  <remove-project path="cts" />
+  <remove-project path="test" />
+  <remove-project path="kernel" />
+  <remove-project path="packages" />
+  <remove-project path="tools" />
+  <remove-project path="hardware" />
+  <remove-project path="vendor" />
+  <remove-project path="device" />
+  <remove-project path="libcore" />
+  <remove-project path="system/bt" />
+  <remove-project path="system/connectivity" />
+  <remove-project path="system/media" />
+  <remove-project path="system/extras" />
+  <remove-project path="system/memory" />
+  <remove-project path="system/netd" />
+  <remove-project path="system/nfc" />
+  <remove-project path="system/objenious" />
+  <remove-project path="system/security" />
+  <remove-project path="system/timezone" />
+  <remove-project path="system/usb" />
+  <remove-project path="system/vold" />
+  <remove-project path="system/wifi" />
+  <remove-project path="frameworks/opt" />
+  <remove-project path="frameworks/libs" />
+  <remove-project path="frameworks/rs" />
+  <remove-project path="frameworks/webview" />
+  <remove-project path="prebuilts/sdk" />
+  <remove-project path="prebuilts/vndk" />
+  <remove-project path="prebuilts/abi-dumps" />
+  <remove-project path="prebuilts/module_sdk" />
+  <remove-project path="prebuilts/rust" />
+  <remove-project path="prebuilts/python" />
+  <remove-project path="external/chromium" />
+  <remove-project path="external/llvm" />
+  <remove-project path="external/rust" />
+  <remove-project path="external/python" />
+  <remove-project path="external/trusty" />
+  <remove-project path="external/pandora" />
+  <remove-project path="external/googletest" />
+  <remove-project path="external/google-benchmark" />
+  <remove-project path="external/gtest" />
+  <remove-project path="external/webrtc" />
+  <remove-project path="external/v8" />
+  <remove-project path="external/skia" />
+  <remove-project path="external/crosvm" />
+  <remove-project path="external/wpa_supplicant_8" />
+  <remove-project path="external/bluetooth" />
+  <remove-project path="external/avb" />
+  <remove-project path="external/syslinux" />
+  <remove-project path="external/audiostreamer" />
+  <remove-project path="external/speex" />
+  <remove-project path="external/flac" />
+  <remove-project path="external/mdns" />
+  <remove-project path="external/srtp" />
+  <remove-project path="external/tinyxml2" />
+  <remove-project path="external/libusb" />
+  <remove-project path="external/jemalloc" />
+  <remove-project path="external/jsoncpp" />
+  <remove-project path="external/nghttp2" />
+  <remove-project path="external/re2" />
+  <remove-project path="external/pcre" />
+  <remove-project path="external/curl" />
+  <remove-project path="external/dbus" />
+  <remove-project path="external/dtc" />
+  <remove-project path="external/e2fsprogs" />
+  <remove-project path="external/cmake" />
+  <remove-project path="external/cbor" />
+  <remove-project path="external/bazel" />
+  <remove-project path="external/bouncycastle" />
+  <remove-project path="external/agl" />
+  <remove-project path="external/activesupport" />
+  <remove-project path="external/alsa-lib" />
+  <remove-project path="external/alsa-utils" />
+  <remove-project path="external/alsa-plugins" />
+  <remove-project path="external/amd" />
+  <remove-project path="external/aosp" />
+  <remove-project path="external/apache-commons" />
+  <remove-project path="external/aac" />
+  <remove-project path="external/accessibility-test-framework" />
+  <remove-project path="external/abseil-cpp" />
+  <remove-project path="external/fmtlib" />
+  <remove-project path="external/fmt" />
+  <remove-project path="external/flatbuffers" />
+  <remove-project path="external/icu" />
+  <remove-project path="external/webp" />
+  <remove-project path="external/fonttools" />
+  <remove-project path="external/compiler-rt" />
+  <remove-project path="external/libcxx" />
+  <remove-project path="external/libevent" />
+  <remove-project path="external/lz4" />
+  <remove-project path="external/zstd" />
+  <remove-project path="external/make" />
+</manifest>
+XMLEOF
         repo sync -c --force-sync --no-clone-bundle --no-tags -j4
         # 删掉所有 .git 目录，省 5-10GB 磁盘（--depth=1 后不再需要 git 历史）
         find /mnt/work -name .git -type d -prune -exec rm -rf {} + 2>/dev/null || true
