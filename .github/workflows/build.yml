@@ -14,6 +14,19 @@ jobs:
     - name: Checkout device tree
       uses: actions/checkout@v4
 
+    - name: Free disk space
+      run: |
+        echo "=== Before cleanup ==="
+        df -h /
+        # 清理不需要的大文件，释放根分区空间
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /usr/local/lib/android
+        sudo rm -rf /opt/ghc
+        sudo rm -rf /opt/hostedtoolcache/CodeQL
+        sudo docker image prune --all --force || true
+        echo "=== After cleanup ==="
+        df -h /
+
     - name: Install dependencies
       run: |
         sudo apt update -y
@@ -25,14 +38,14 @@ jobs:
     - name: Create swap space
       run: |
         free -h
-        df -h /
-        # 追加16G swap（避免24G占满磁盘；总内存=15G物理+3G自带+16G新增=34G）
-        sudo dd if=/dev/zero of=/mnt/swapfile_extra bs=1M count=16384 status=none
+        df -h /mnt
+        # 8G swap在/mnt大卷上（总内存=15G物理+3G自带+8G新增=26G，够用）
+        sudo dd if=/dev/zero of=/mnt/swapfile_extra bs=1M count=8192 status=none
         sudo chmod 600 /mnt/swapfile_extra
         sudo mkswap /mnt/swapfile_extra
         sudo swapon /mnt/swapfile_extra
         free -h
-        df -h /
+        df -h /mnt
 
     - name: Install repo
       run: |
@@ -46,21 +59,24 @@ jobs:
         git config --global user.email "builder@github.com"
         git config --global user.name "GitHub Actions"
 
-    - name: Sync AERA source
+    - name: Sync AERA source (on /mnt big volume)
       run: |
-        mkdir -p aera-src && cd aera-src
+        # 源码同步到/mnt大卷（150GB），不占根分区
+        sudo mkdir -p /mnt/work
+        sudo chown $USER:$USER /mnt/work
+        cd /mnt/work
         repo init -u https://github.com/AERA-Recovery/android_manifest.git -b aera-16.0 --depth=1
         repo sync -c --force-sync --no-clone-bundle --no-tags -j4
-        df -h /
+        df -h /mnt
 
     - name: Copy device tree
       run: |
-        mkdir -p aera-src/device/lenovo/avr
-        cp -r device/lenovo/avr/* aera-src/device/lenovo/avr/
+        mkdir -p /mnt/work/device/lenovo/avr
+        cp -r device/lenovo/avr/* /mnt/work/device/lenovo/avr/
 
     - name: Build recovery
       run: |
-        cd aera-src
+        cd /mnt/work
         source build/envsetup.sh
         lunch twrp_avr-bp2a-eng
         export SOONG_UI_MEMORY=4G
@@ -72,5 +88,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: avr-recovery-img
-        path: aera-src/out/target/product/avr/recovery.img
+        path: /mnt/work/out/target/product/avr/recovery.img
         retention-days: 7
