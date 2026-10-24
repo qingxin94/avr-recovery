@@ -104,4 +104,6 @@ PRODUCT_COPY_FILES += \
     device/lenovo/avr/modules/wlan_firmware_service.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/wlan_firmware_service.ko \
     device/lenovo/avr/modules/cnss2.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/cnss2.ko \
     device/lenovo/avr/modules/icnss2.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/icnss2.ko \
-    device/lenovo/avr/modules/qca_cld3_wcn7750.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/qca_cld3_wcn7750.ko \
+    device/lenovo/avr/modules/qca_cld3_wcn7750.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/qca_cld3_wcn7750.ko
+
+
