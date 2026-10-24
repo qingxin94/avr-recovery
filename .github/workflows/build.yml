@@ -40,7 +40,7 @@ jobs:
         free -h
         df -h /mnt
         # 8G swap在/mnt大卷上（总内存=15G物理+3G自带+8G新增=26G，够用）
-        sudo dd if=/dev/zero of=/mnt/swapfile_extra bs=1M count=8192 status=none
+        sudo dd if=/dev/zero of=/mnt/swapfile_extra bs=1M count=16384 status=none
         sudo chmod 600 /mnt/swapfile_extra
         sudo mkswap /mnt/swapfile_extra
         sudo swapon /mnt/swapfile_extra
@@ -82,6 +82,8 @@ jobs:
         export SOONG_UI_MEMORY=4G
         export GOMAXPROCS=2
         export ANDROID_JAVA_OPTS="-Xmx4g -Xms1g"
+        export GOMEMLIMIT=12GiB
+        export GOGC=50
         mka adbd recoveryimage -j1
 
     - name: Upload recovery image
