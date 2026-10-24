@@ -175,12 +175,12 @@ AERA_USE_DMCTL := true
 AERA_DEFAULT_TIMEZONE := Asia/Shanghai
 
 # ─── Vendor modules (touch + MMI + battery + WCN7750 WiFi + full dependency chain) ───
-# Load order: dependencies first.
+# Load order: base infrastructure first, then functional drivers.
+# Base (from vendor_boot ramdisk): qcom_ipc_logging/smem/minidump/memory_dump_v2/pinctrl-msm/qcom_aoss/socinfo/qcom_iommu_util/sched-walt/mdt_loader/qcom-scm/qti-regmap-debugfs/clk-qcom
 # Touch: mmi_annotate/mmi_info/sensors_class -> mmi_relay -> panel_event_notifier -> touchscreen_mmi -> goodix_brl_thp
 # Battery: qti_battery_charger/qti_pmic_glink -> mmi_glink_charger -> qti_glink_charger_v2 -> qpnp_adaptive_charge -> charger-ulog-glink
 # WiFi: cnss_prealloc/cnss_utils/cnss_nl -> cnss_plat_ipc_qmi_svc -> wlan_firmware_service -> cnss2/icnss2 -> qca_cld3_wcn7750 -> spi_cnss_proto/rmnet_wlan
-# (qcom_ipc_logging/minidump/smem/rfkill/memory_dump_v2/pinctrl-msm/cmd-db/qcom_aoss/socinfo/qcom_iommu_util/sched-walt are built-in per phone kallsyms)
-AERA_LOAD_VENDOR_MODULES := "mmi_annotate.ko mmi_info.ko sensors_class.ko mmi_relay.ko panel_event_notifier.ko touchscreen_mmi.ko goodix_brl_thp.ko qti_battery_charger.ko qti_pmic_glink.ko mmi_glink_charger.ko qti_glink_charger_v2.ko qpnp_adaptive_charge.ko charger-ulog-glink.ko bm_adsp_ulog.ko moto_reboot_reason.ko cnss_prealloc.ko cnss_utils.ko cnss_nl.ko cnss_plat_ipc_qmi_svc.ko wlan_firmware_service.ko qmi_helpers.ko cmd-db.ko cnss2.ko icnss2.ko qcom_ramdump.ko qcom_va_minidump.ko mhi.ko pci-msm-drv.ko pdr_interface.ko rproc_qcom_common.ko cfg80211.ko ipam.ko qca_cld3_wcn7750.ko spi_cnss_proto.ko rmnet_core.ko rmnet_mem.ko rmnet_ctl.ko rmnet_wlan.ko smem-mailbox.ko"
+AERA_LOAD_VENDOR_MODULES := "qcom_ipc_logging.ko smem.ko minidump.ko memory_dump_v2.ko pinctrl-msm.ko qcom_aoss.ko socinfo.ko qcom_iommu_util.ko sched-walt.ko mdt_loader.ko qcom-scm.ko qti-regmap-debugfs.ko clk-qcom.ko mmi_annotate.ko mmi_info.ko sensors_class.ko mmi_relay.ko panel_event_notifier.ko touchscreen_mmi.ko goodix_brl_thp.ko qti_battery_charger.ko qti_pmic_glink.ko mmi_glink_charger.ko qti_glink_charger_v2.ko qpnp_adaptive_charge.ko charger-ulog-glink.ko bm_adsp_ulog.ko moto_reboot_reason.ko cnss_prealloc.ko cnss_utils.ko cnss_nl.ko cnss_plat_ipc_qmi_svc.ko wlan_firmware_service.ko qmi_helpers.ko cmd-db.ko cnss2.ko icnss2.ko qcom_ramdump.ko qcom_va_minidump.ko mhi.ko pci-msm-drv.ko pdr_interface.ko rproc_qcom_common.ko rfkill.ko cfg80211.ko ipam.ko qca_cld3_wcn7750.ko spi_cnss_proto.ko rmnet_core.ko rmnet_mem.ko rmnet_ctl.ko rmnet_wlan.ko smem-mailbox.ko"
 AERA_LOAD_VENDOR_MODULES_EXCLUDE_GKI := true
 AERA_LOAD_PREBUILT_MODULES_AT_FIRST := true
 AERA_LOAD_VENDOR_BOOT_MODULES := true

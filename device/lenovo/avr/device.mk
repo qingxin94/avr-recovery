@@ -21,6 +21,19 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Copy Goodix Berlin touchscreen driver modules into recovery ramdisk
 # Loaded by AERA framework via AERA_LOAD_VENDOR_MODULES (see BoardConfig.mk)
 PRODUCT_COPY_FILES += \
+    device/lenovo/avr/modules/qcom_ipc_logging.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/qcom_ipc_logging.ko \
+    device/lenovo/avr/modules/smem.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/smem.ko \
+    device/lenovo/avr/modules/minidump.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/minidump.ko \
+    device/lenovo/avr/modules/memory_dump_v2.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/memory_dump_v2.ko \
+    device/lenovo/avr/modules/pinctrl-msm.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/pinctrl-msm.ko \
+    device/lenovo/avr/modules/qcom_aoss.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/qcom_aoss.ko \
+    device/lenovo/avr/modules/socinfo.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/socinfo.ko \
+    device/lenovo/avr/modules/qcom_iommu_util.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/qcom_iommu_util.ko \
+    device/lenovo/avr/modules/sched-walt.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/sched-walt.ko \
+    device/lenovo/avr/modules/mdt_loader.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/mdt_loader.ko \
+    device/lenovo/avr/modules/qcom-scm.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/qcom-scm.ko \
+    device/lenovo/avr/modules/qti-regmap-debugfs.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/qti-regmap-debugfs.ko \
+    device/lenovo/avr/modules/clk-qcom.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/clk-qcom.ko \
     device/lenovo/avr/modules/mmi_annotate.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/mmi_annotate.ko \
     device/lenovo/avr/modules/mmi_info.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/mmi_info.ko \
     device/lenovo/avr/modules/sensors_class.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/sensors_class.ko \
@@ -51,6 +64,7 @@ PRODUCT_COPY_FILES += \
     device/lenovo/avr/modules/pci-msm-drv.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/pci-msm-drv.ko \
     device/lenovo/avr/modules/pdr_interface.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/pdr_interface.ko \
     device/lenovo/avr/modules/rproc_qcom_common.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/rproc_qcom_common.ko \
+    device/lenovo/avr/modules/rfkill.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/rfkill.ko \
     device/lenovo/avr/modules/cfg80211.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/cfg80211.ko \
     device/lenovo/avr/modules/ipam.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/ipam.ko \
     device/lenovo/avr/modules/qca_cld3_wcn7750.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/qca_cld3_wcn7750.ko \
