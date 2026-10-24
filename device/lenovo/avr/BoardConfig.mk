@@ -58,7 +58,11 @@ BOARD_INIT_BOOT_IMAGE_PARTITION_SIZE := 8388608  # 8 MB
 BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 100663296  # 96 MB
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 134217728  # 128 MB
 BOARD_DTBOIMG_PARTITION_SIZE := 75497472         # 72 MB
-BOARD_INCLUDE_DTB_IN_BOOTIMG := false
+
+# NOTE: do NOT define BOARD_INCLUDE_DTB_IN_BOOTIMG at all (even =false).
+# AERA build_make uses `ifdef BOARD_INCLUDE_DTB_IN_BOOTIMG` (core/Makefile ~line 1028):
+# merely defining it makes INSTALLED_DTBIMAGE_TARGET := $(PRODUCT_OUT)/dtb.img,
+# which then has no build rule → ninja "dtb.img missing". myron/canoe has no such line.
 
 # ─── A/B ───
 AB_OTA_UPDATER   := true
