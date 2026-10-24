@@ -99,7 +99,7 @@ jobs:
         source build/envsetup.sh
         lunch twrp_avr-bp2a-eng
         export SOONG_UI_MEMORY=4G
-        export GOMAXPROCS=2
+        export GOMAXPROCS=4
         export ANDROID_JAVA_OPTS="-Xmx4g -Xms1g"
         export GOMEMLIMIT=12GiB
         export GOGC=50
