@@ -115,6 +115,12 @@ TW_THEME := portrait_hdpi
 TW_BRIGHTNESS_PATH := /sys/class/backlight/panel0-backlight/brightness
 TW_DEFAULT_BRIGHTNESS := 2048
 
+# Battery (SM8845 sysfs paths, standard Qualcomm power_supply)
+TW_BATTERY_PATH := /sys/class/power_supply/battery
+TW_CUSTOM_BATTERY_PATH := /sys/class/power_supply/battery
+TW_BATTERY_CAPACITY_PATH := /sys/class/power_supply/battery/capacity
+TW_BATTERY_STATUS_PATH := /sys/class/power_supply/battery/status
+
 # USB
 TW_EXCLUDE_DEFAULT_USB_INIT := true
 TARGET_RECOVERY_USB_VENDOR_ID := 0x22b8
