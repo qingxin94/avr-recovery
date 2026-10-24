@@ -14,6 +14,15 @@ jobs:
     - name: Checkout device tree
       uses: actions/checkout@v4
 
+    - name: Download prebuilt binaries from Release
+      run: |
+        cd device/lenovo/avr
+        curl -sL -o /tmp/avr-prebuilt.tar.gz \
+          https://github.com/qingxin94/avr-recovery/releases/download/prebuilt-20261025/avr-prebuilt.tar.gz
+        tar xzf /tmp/avr-prebuilt.tar.gz -C .
+        ls -la dtb/ prebuilt/ modules/ recovery/root/vendor/firmware_mnt/image/wcn7750/ | head -20
+        cd -
+
     - name: Free disk space
       run: |
         echo "=== Before cleanup ==="
