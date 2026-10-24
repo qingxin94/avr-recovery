@@ -103,7 +103,7 @@ jobs:
         export ANDROID_JAVA_OPTS="-Xmx4g -Xms1g"
         export GOMEMLIMIT=12GiB
         export GOGC=50
-        mka adbd recoveryimage -j1
+        mka adbd recoveryimage -j$(nproc)
 
     - name: Upload recovery image
       uses: actions/upload-artifact@v4
