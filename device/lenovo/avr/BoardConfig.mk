@@ -185,10 +185,8 @@ AERA_LOAD_PREBUILT_MODULES_AT_FIRST := true
 AERA_LOAD_VENDOR_BOOT_MODULES := true
 AERA_NO_LEGACY_PROPS := true
 
-# Battery
+# Battery (AERA defaults to /sys/class/power_supply/battery; align with myron — no custom vars)
 AERA_BATTERY_SYSFS_WAIT_SECONDS := 5
-TW_BATTERY_PATH := /sys/class/power_supply/battery
-TW_CUSTOM_BATTERY_PATH := /sys/class/power_supply/battery
 
 # USB
 AERA_EXCLUDE_DEFAULT_USB_INIT := true
@@ -205,7 +203,7 @@ AERA_USE_SERIALNO_PROPERTY_FOR_DEVICE_ID := true
 AERA_CUSTOM_CPU_TEMP_PATH := "/sys/class/thermal/thermal_zone45/temp"
 AERA_EXTRA_LANGUAGES := true
 AERA_DEFAULT_LANGUAGE := en
-AERA_DEVICE_VERSION := "LENOVO_Y70_AVR"
+AERA_DEVICE_VERSION := LENOVO_Y70_AVR
 AERA_INCLUDE_OMAPI := true
 HAVE_SELINUX := true
 RECOVERY_GRAPHICS_USE_LINELENGTH := true
