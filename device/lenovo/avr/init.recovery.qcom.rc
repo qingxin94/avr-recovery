@@ -26,17 +26,7 @@
 #
 
 on init
-    # Load MMI touchscreen driver stack (Goodix Berlin THP)
-    # Dependency order: mmi_annotate -> mmi_info -> sensors_class -> mmi_relay -> panel_event_notifier -> touchscreen_mmi -> goodix_brl_thp
-    # smem/minidump are built into GKI kernel (confirmed absent from vendor_dlkm)
-    insmod /lib/modules/mmi_annotate.ko
-    insmod /lib/modules/mmi_info.ko
-    insmod /lib/modules/sensors_class.ko
-    insmod /lib/modules/mmi_relay.ko
-    insmod /lib/modules/panel_event_notifier.ko
-    insmod /lib/modules/touchscreen_mmi.ko
-    insmod /lib/modules/goodix_brl_thp.ko
-
+    # Touch driver modules are loaded automatically by AERA framework via AERA_LOAD_VENDOR_MODULES
     mkdir /config
     mount configfs none /config
     mkdir /config/usb_gadget/g1 0770 shell shell
