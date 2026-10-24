@@ -26,12 +26,11 @@ jobs:
       run: |
         free -h
         df -h /mnt
-        if ! swapon --show | grep -q swap; then
-          sudo dd if=/dev/zero of=/mnt/swapfile bs=1M count=24576 status=none
-          sudo chmod 600 /mnt/swapfile
-          sudo mkswap /mnt/swapfile
-          sudo swapon /mnt/swapfile
-        fi
+        # 无条件追加24G swap（runner自带3G不够，多swap可共存）
+        sudo dd if=/dev/zero of=/mnt/swapfile_extra bs=1M count=24576 status=none
+        sudo chmod 600 /mnt/swapfile_extra
+        sudo mkswap /mnt/swapfile_extra
+        sudo swapon /mnt/swapfile_extra
         free -h
 
     - name: Install repo
