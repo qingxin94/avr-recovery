@@ -109,8 +109,8 @@ TW_USE_FSCRYPT_POLICY := 2
 TW_INCLUDE_FUSE_EXFAT := true
 TW_INCLUDE_FUSE_NTFS := true
 
-# Screen (from vendor_boot cmdline: vfb 640x400 - this is recovery framebuffer)
-# Actual panel resolution needs confirmation; stock recovery uses vfb
+# Screen (confirmed from "About phone": 3168x1440 WQHD+, vtdr6130 AMOLED 144Hz)
+# Recovery uses vfb fallback when DRM panel driver not fully loaded
 TW_THEME := portrait_hdpi
 TW_BRIGHTNESS_PATH := /sys/class/backlight/panel0-backlight/brightness
 TW_DEFAULT_BRIGHTNESS := 2048
