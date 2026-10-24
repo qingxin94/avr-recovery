@@ -1,14 +1,25 @@
 #
 # system.prop for Lenovo Legion Y70 (avr)
+# Values aligned with AERA myron/canoe proven template + device confirmation
 #
 
-# USB controller (from init.recovery.qcom.rc default)
-ro.boot.hardware=qcom
+# Platform (SM8845 / canoe)
+ro.board.platform=canoe
+ro.product.board=canoe
 ro.hardware=qcom
+ro.boot.hardware=qcom
 
-# FBE
+# USB — UFS controller confirmed from iomem: 1d84000.ufshc; DWC3 at a600000
+ro.boot.bootdevice=1d84000.ufshc
+sys.usb.configfs=1
+
+# Dynamic partitions / Virtual A/B
+ro.boot.dynamic_partitions=true
+ro.virtual_ab.enabled=true
+ro.virtual_ab.compression.enabled=true
+
+# FBE (v2, wrappedkey)
 ro.crypto.volume.filenames_mode=aes-256-cts
-ro.crypto.fs_crypto_blkdev=/dev/block/sda
 ro.crypto.fde_available=false
 ro.crypto.fbe_available=true
 ro.crypto.type=file
@@ -20,9 +31,12 @@ ro.boot.vbmeta.device_state=unlocked
 # UFS
 ro.storage.type=ufs
 
-# Display recovery framebuffer (confirmed panel: 3168x1440 WQHD+ vtdr6130 AMOLED 144Hz)
-# Use real panel resolution as vfb fallback so TWRP fills screen when DRM not ready
-video=vfb:3168x1440,bpp=32,memsize=25165824
+# QCOM gatekeeper (TZ-only path, no SPU)
+vendor.gatekeeper.disable_spu=true
+vendor.gatekeeper.is_security_level_spu=0
+
+# Fuse passthrough
+persist.sys.fuse.passthrough.enable=true
 
 # Disable properties that may cause issues in recovery
 ro.debuggable=1
