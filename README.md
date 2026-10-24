@@ -28,3 +28,19 @@ fastboot reboot recovery
 ## 手动触发
 
 如果 push 后没有自动编译，去 Actions 页面手动点 "Run workflow"。
+
+## 已知问题与状态
+
+| 项目 | 状态 | 说明 |
+|---|---|---|
+| 编译内存 | ✅ 已修复 | Actions runner 内存 15.6GB 不足，已加 8GB swap + 降并行度 -j2 |
+| 电池电量显示 | ✅ 已配置 | 按 SM8845 标准 Qualcomm power_supply 路径配置 TW_BATTERY_PATH |
+| 屏幕分辨率 | ⚠️ 待实测 | recovery 使用 vfb 640x400 虚拟帧缓冲，实际面板分辨率待刷机确认 |
+| 触摸屏 | ⚠️ 待实测 | SM8845 新平台触摸驱动是否随内核加载，需刷入后确认；无触摸可用音量键+电源键操作 |
+| dtbo 分区 | ✅ 无影响 | dtbo.img 72MB 未在 BoardConfig 引用，不影响 recovery 编译 |
+
+## 无触摸时的操作方式
+
+如果 recovery 触摸不可用，可用实体键操作：
+- **音量上/下**：移动光标
+- **电源键**：确认/选择
