@@ -51,8 +51,6 @@ jobs:
         mkdir -p aera-src && cd aera-src
         repo init -u https://github.com/AERA-Recovery/android_manifest.git -b aera-16.0 --depth=1
         repo sync -c --force-sync --no-clone-bundle --no-tags -j4
-        # 清理git对象省磁盘
-        find . -name ".git" -type d -exec git -C {} gc --aggressive --prune=now \; 2>/dev/null || true
         df -h /
 
     - name: Copy device tree
