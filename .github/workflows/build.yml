@@ -95,20 +95,19 @@ jobs:
           -o .repo/local_manifests/remove-minimal.xml
         # 自动循环：报错就删掉不存在的remove-project再试
         set -o pipefail
-        for i in $(seq 1 1000); do
+        for i in $(seq 1 2000); do
           echo "=== sync attempt $i ==="
           if repo sync -c --force-sync --no-clone-bundle --no-tags -j4 > /tmp/sync.log 2>&1; then
             echo "=== sync OK ==="
             break
           fi
-          cat /tmp/sync.log
-          bad=$(grep -oP 'remove-project path="[^"]*"' /tmp/sync.log | head -1 | sed 's/remove-project path="//;s/"//')
+          bad=$(grep -oP 'remove-project (path|name)="[^"]*"' /tmp/sync.log | head -1 | sed 's/remove-project [a-z]*="//;s/"//')
           if [ -z "$bad" ]; then
             echo "=== sync failed, no remove-project error ==="
             exit 1
           fi
           echo "=== removing non-existent: $bad ==="
-          sed -i "\|path=\"$bad\"|d" .repo/local_manifests/remove-minimal.xml
+          sed -i "\|\"$bad\"|d" .repo/local_manifests/remove-minimal.xml
         done
         # 删掉所有 .git 目录，省 5-10GB 磁盘（--depth=1 后不再需要 git 历史）
         find /mnt/work -name .git -type d -prune -exec rm -rf {} + 2>/dev/null || true
