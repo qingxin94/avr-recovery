@@ -107,3 +107,6 @@ PRODUCT_COPY_FILES += \
     device/lenovo/avr/modules/qca_cld3_wcn7750.ko:$(TARGET_RECOVERY_ROOT_OUT)/lib/modules/qca_cld3_wcn7750.ko
 
 
+
+# 跳过prebuilt page size检查（magiskboot 4096 vs 16384）
+PRODUCT_CHECK_PREBUILT_MAX_PAGE_SIZE := false
