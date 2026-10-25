@@ -94,12 +94,14 @@ jobs:
         curl -sL https://raw.githubusercontent.com/AERA-Recovery/android_manifest/aera-16.0/remove-minimal.xml \
           -o .repo/local_manifests/remove-minimal.xml
         # 自动循环：报错就删掉不存在的remove-project再试
+        set -o pipefail
         for i in $(seq 1 30); do
           echo "=== sync attempt $i ==="
-          if repo sync -c --force-sync --no-clone-bundle --no-tags -j4 2>&1 | tee /tmp/sync.log; then
+          if repo sync -c --force-sync --no-clone-bundle --no-tags -j4 > /tmp/sync.log 2>&1; then
             echo "=== sync OK ==="
             break
           fi
+          cat /tmp/sync.log
           bad=$(grep -oP 'remove-project path="[^"]*"' /tmp/sync.log | head -1 | sed 's/remove-project path="//;s/"//')
           if [ -z "$bad" ]; then
             echo "=== sync failed, no remove-project error ==="
