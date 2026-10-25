@@ -90,6 +90,7 @@ jobs:
         cd /mnt/work
         repo init -u https://github.com/AERA-Recovery/android_manifest.git -b aera-16.0 --depth=1
         # 不用AERA官方remove-minimal.xml（太多不存在项目导致报错），只用本地激进版
+        mkdir -p .repo/local_manifests
         cp $GITHUB_WORKSPACE/.repo/local_manifests/remove-minimal2.xml .repo/local_manifests/
         repo sync -c --force-sync --no-clone-bundle --no-tags -j4
         # 删掉所有 .git 目录，省 5-10GB 磁盘（--depth=1 后不再需要 git 历史）
