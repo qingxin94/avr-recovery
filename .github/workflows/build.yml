@@ -89,8 +89,16 @@ jobs:
         sudo chown $USER:$USER /mnt/work
         cd /mnt/work
         repo init -u https://github.com/AERA-Recovery/android_manifest.git -b aera-16.0 --depth=1
-        # 不用AERA官方remove-minimal.xml（太多不存在项目导致报错），只用本地激进版
         mkdir -p .repo/local_manifests
+        # AERA官方remove-minimal.xml（删601个项目）+ 自动过滤不存在的项目
+        curl -sL https://raw.githubusercontent.com/AERA-Recovery/android_manifest/aera-16.0/remove-minimal.xml \
+          -o .repo/local_manifests/remove-minimal.xml
+        # 拿实际项目列表，过滤掉manifest里已不存在的remove-project
+        grep -oP 'project path="[^"]*"' .repo/manifests/default.xml | sed 's/project path="//;s/"//' | sort -u > /tmp/actual.txt
+        grep -oP 'remove-project path="[^"]*"' .repo/local_manifests/remove-minimal.xml | sed 's/remove-project path="//;s/"//' | while read p; do
+          grep -q "^$p$" /tmp/actual.txt || sed -i "\|path=\"$p\"|d" .repo/local_manifests/remove-minimal.xml
+        done
+        # 额外激进删除（本地文件）
         cp $GITHUB_WORKSPACE/.repo/local_manifests/remove-minimal2.xml .repo/local_manifests/
         repo sync -c --force-sync --no-clone-bundle --no-tags -j4
         # 删掉所有 .git 目录，省 5-10GB 磁盘（--depth=1 后不再需要 git 历史）
