@@ -95,7 +95,7 @@ jobs:
           -o .repo/local_manifests/remove-minimal.xml
         # 自动循环：报错就删掉不存在的remove-project再试
         set -o pipefail
-        for i in $(seq 1 30); do
+        for i in $(seq 1 1000); do
           echo "=== sync attempt $i ==="
           if repo sync -c --force-sync --no-clone-bundle --no-tags -j4 > /tmp/sync.log 2>&1; then
             echo "=== sync OK ==="
