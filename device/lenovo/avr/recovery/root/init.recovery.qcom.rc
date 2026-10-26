@@ -62,9 +62,9 @@ on property:twrp.modules.loaded=true
     write /sys/kernel/boot_adsp/ssr 1
     # Wait for battery path
     wait /sys/class/power_supply/battery
-    # Wait for touch driver nodes
-    wait /sys/class/touch/touch_dev/enable_touch_raw
-    write /sys/class/touch/touch_dev/enable_touch_raw 0
+    # Wait for touch input device
+    wait /dev/input/event0
+    wait /dev/input/event1
 
 on property:servicemanager.ready=true
     setprop sys.boot_completed 1
