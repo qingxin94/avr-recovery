@@ -190,6 +190,7 @@ AERA_INPUT_BLACKLIST := "hbtp_vm:qcom-hv-haptics"
 
 # Support haptics feedback
 AERA_SUPPORT_INPUT_FF_HAPTICS := true
+AERA_SUPPORT_INPUT_AIDL_HAPTICS := true
 AERA_LOAD_VENDOR_BOOT_MODULES := true
 AERA_NO_LEGACY_PROPS := true
 
