@@ -5,6 +5,7 @@
 
 import /init.recovery.hlthchrg.rc
 import /init.recovery.usb.rc
+import /init.recovery.wifi.rc
 
 on early-fs
     write /proc/sys/walt/sched_lib_name "recovery,magiskboot,Updater,updater,update_engine_sideload"
