@@ -183,7 +183,7 @@ AERA_LOAD_VENDOR_MODULES_EXCLUDE_GKI := true
 AERA_LOAD_PREBUILT_MODULES_AT_FIRST := true
 
 # WiFi/BT modules loaded after FBE decrypt (per official pattern)
-AERA_POST_DECRYPT_MODULES := "smem-mailbox.ko cnss_prealloc.ko cnss_utils.ko cnss_plat_ipc_qmi_svc.ko cnss_nl.ko qmi_helpers.ko qcom_pdr_msg.ko pdr_interface.ko rproc_qcom_common.ko spi_cnss_proto.ko rfkill.ko cfg80211.ko gsim.ko wlan_firmware_service.ko cnss2.ko icnss2.ko qca_cld3_wcn7750.ko rmnet_mem.ko rmnet_ctl.ko rmnet_core.ko rmnet_wlan.ko ipam.ko btfmcodec.ko btpower.ko machine_dlkm.ko bt_fm_swr.ko lpass_bt_swr_dlkm.ko"
+AERA_POST_DECRYPT_MODULES := "smem-mailbox.ko cnss_prealloc.ko cnss_utils.ko cnss_plat_ipc_qmi_svc.ko cnss_nl.ko qmi_helpers.ko qcom_pdr_msg.ko pdr_interface.ko rproc_qcom_common.ko spi_cnss_proto.ko rfkill.ko cfg80211.ko gsim.ko wlan_firmware_service.ko cnss2.ko icnss2.ko qca_cld3_wcn7750.ko rmnet_mem.ko rmnet_ctl.ko rmnet_core.ko rmnet_wlan.ko ipam.ko btfmcodec.ko btpower.ko bt_fm_swr.ko lpass_bt_swr_dlkm.ko machine_dlkm.ko"
 
 # Input blacklist (exclude unwanted input devices)
 AERA_INPUT_BLACKLIST := "hbtp_vm:qcom-hv-haptics"
