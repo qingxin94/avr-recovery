@@ -176,12 +176,20 @@ AERA_ENABLE_ALL_PARTITION_TOOLS := true
 AERA_USE_DMCTL := true
 AERA_DEFAULT_TIMEZONE := Asia/Shanghai
 
-# ─── Vendor modules (touch + MMI + battery + WCN7750 WiFi + full dependency chain) ───
-# 82 modules total: complete BFS dependency closure from vendor_boot ramdisk + vendor_dlkm
-# Load order: topological (dependencies first). modules.dep included for Modprobe.
-AERA_LOAD_VENDOR_MODULES := "i2c-qcom-geni.ko spi-geni-qcom.ko goodix_brl_thp.ko touchscreen_mmi.ko q6_notifier_dlkm.ko spf_core_dlkm.ko audpkt_ion_dlkm.ko gpr_dlkm.ko audio_pkt_dlkm.ko q6_dlkm.ko adsp_loader_dlkm.ko q6_pdr_dlkm.ko pinctrl_lpi_dlkm.ko swr_dlkm.ko swr_ctrl_dlkm.ko snd_event_dlkm.ko wcd_core_dlkm.ko mbhc_dlkm.ko sdca_registers_dlkm.ko wcd9xxx_dlkm.ko stub_dlkm.ko swr_dmic_dlkm.ko swr_haptics_dlkm.ko hdmi_dlkm.ko lpass_cdc_wsa2_macro_dlkm.ko lpass_cdc_wsa_macro_dlkm.ko lpass_cdc_va_macro_dlkm.ko lpass_cdc_tx_macro_dlkm.ko lpass_cdc_rx_macro_dlkm.ko lpass_cdc_dlkm.ko wsa884x_dlkm.ko wsa883x_dlkm.ko wcd938x_dlkm.ko wcd938x_slave_dlkm.ko wcd939x_dlkm.ko wcd939x_slave_dlkm.ko machine_dlkm.ko frpc-adsprpc.ko qcom_q6v5.ko qcom_q6v5_pas.ko qcom_sysmon.ko bm_adsp_ulog.ko charger-ulog-glink.ko gsim.ko wcd_usbss_i2c.ko msm_kgsl.ko qcom-hv-haptics.ko qti_pmic_glink.ko qti_battery_charger.ko qti_glink_charger_v2.ko mmi_glink_charger.ko qpnp_adaptive_charge.ko smem-mailbox.ko cnss_prealloc.ko cnss_utils.ko cnss_plat_ipc_qmi_svc.ko cnss_nl.ko qmi_helpers.ko qcom_pdr_msg.ko pdr_interface.ko rproc_qcom_common.ko spi_cnss_proto.ko rfkill.ko cfg80211.ko wlan_firmware_service.ko cnss2.ko icnss2.ko qca_cld3_wcn7750.ko rmnet_mem.ko rmnet_ctl.ko rmnet_core.ko rmnet_wlan.ko ipam.ko dwc3-msm.ko usb_f_gsi.ko cmd-db.ko icc-clk.ko clk-qcom.ko pinctrl-msm.ko qcom-scm.ko smem.ko socinfo.ko msm_dma_iommu_mapping.ko qcom_iommu_util.ko qcom_dma_heaps.ko mem-prot.ko secure_buffer.ko mem_buf_dev.ko deferred-free-helper.ko qcom_aoss.ko qcom_glink.ko qcom_glink_smem.ko qcom_smd.ko qcom_ramdump.ko minidump.ko memory_dump_v2.ko qcom_va_minidump.ko qcom_ipc_logging.ko debug_symbol.ko proxy-consumer.ko gdsc-regulator.ko debug-regulator.ko qti-regmap-debugfs.ko mmi_annotate.ko mmi_info.ko mmi_relay.ko moto_reboot_reason.ko panel_event_notifier.ko sensors_class.ko sched-walt.ko crm-v2.ko mdt_loader.ko gh_arm_drv.ko gh_dbl.ko gh_msgq.ko gh_rm_drv.ko gh_mem_notifier.ko gh_rm_heap_manager.ko pcie-pdc.ko pci-msm-drv.ko mhi.ko redriver.ko repeater.ko"
+# ─── Vendor modules (touch + MMI + battery + full dependency chain) ───
+# Load order: topological (dependencies first). WiFi moved to POST_DECRYPT per official pattern.
+AERA_LOAD_VENDOR_MODULES := "i2c-qcom-geni.ko spi-geni-qcom.ko goodix_brl_thp.ko touchscreen_mmi.ko cmd-db.ko icc-clk.ko clk-qcom.ko pinctrl-msm.ko qcom-scm.ko smem.ko socinfo.ko msm_dma_iommu_mapping.ko qcom_iommu_util.ko qcom_dma_heaps.ko mem-prot.ko secure_buffer.ko mem_buf_dev.ko deferred-free-helper.ko qcom_aoss.ko qcom_glink.ko qcom_glink_smem.ko qcom_smd.ko q6_notifier_dlkm.ko spf_core_dlkm.ko audpkt_ion_dlkm.ko gpr_dlkm.ko audio_pkt_dlkm.ko audio_prm_dlkm.ko q6_dlkm.ko adsp_loader_dlkm.ko q6_pdr_dlkm.ko pinctrl_lpi_dlkm.ko swr_dlkm.ko swr_ctrl_dlkm.ko snd_event_dlkm.ko wcd_core_dlkm.ko mbhc_dlkm.ko sdca_registers_dlkm.ko wcd9xxx_dlkm.ko stub_dlkm.ko swr_dmic_dlkm.ko swr_haptics_dlkm.ko hdmi_dlkm.ko lpass_cdc_wsa2_macro_dlkm.ko lpass_cdc_wsa_macro_dlkm.ko lpass_cdc_va_macro_dlkm.ko lpass_cdc_tx_macro_dlkm.ko lpass_cdc_rx_macro_dlkm.ko lpass_cdc_dlkm.ko wsa884x_dlkm.ko wsa883x_dlkm.ko wcd938x_dlkm.ko wcd938x_slave_dlkm.ko wcd939x_dlkm.ko wcd939x_slave_dlkm.ko wcd9378_dlkm.ko wcd9378_slave_dlkm.ko frpc-adsprpc.ko qcom_q6v5.ko qcom_q6v5_pas.ko qcom_sysmon.ko bm_adsp_ulog.ko charger-ulog-glink.ko wcd_usbss_i2c.ko qti_pmic_glink.ko qti_battery_charger.ko qti_glink_charger_v2.ko mmi_glink_charger.ko qpnp_adaptive_charge.ko dwc3-msm.ko usb_f_gsi.ko qcom_ramdump.ko minidump.ko memory_dump_v2.ko qcom_va_minidump.ko qcom_ipc_logging.ko debug_symbol.ko proxy-consumer.ko gdsc-regulator.ko debug-regulator.ko qti-regmap-debugfs.ko mmi_annotate.ko mmi_info.ko mmi_relay.ko moto_reboot_reason.ko panel_event_notifier.ko sensors_class.ko sched-walt.ko crm-v2.ko mdt_loader.ko gh_arm_drv.ko gh_dbl.ko gh_msgq.ko gh_rm_drv.ko gh_mem_notifier.ko gh_rm_heap_manager.ko pcie-pdc.ko pci-msm-drv.ko mhi.ko redriver.ko repeater.ko msm_kgsl.ko qcom-hv-haptics.ko"
 AERA_LOAD_VENDOR_MODULES_EXCLUDE_GKI := true
 AERA_LOAD_PREBUILT_MODULES_AT_FIRST := true
+
+# WiFi/BT modules loaded after FBE decrypt (per official pattern)
+AERA_POST_DECRYPT_MODULES := "smem-mailbox.ko cnss_prealloc.ko cnss_utils.ko cnss_plat_ipc_qmi_svc.ko cnss_nl.ko qmi_helpers.ko qcom_pdr_msg.ko pdr_interface.ko rproc_qcom_common.ko spi_cnss_proto.ko rfkill.ko cfg80211.ko wlan_firmware_service.ko cnss2.ko icnss2.ko qca_cld3_wcn7750.ko rmnet_mem.ko rmnet_ctl.ko rmnet_core.ko rmnet_wlan.ko ipam.ko btfmcodec.ko btpower.ko bt_fm_swr.ko lpass_bt_swr_dlkm.ko machine_dlkm.ko gsim.ko"
+
+# Input blacklist (exclude unwanted input devices)
+AERA_INPUT_BLACKLIST := "hbtp_vm:qcom-hv-haptics"
+
+# Support haptics feedback
+AERA_SUPPORT_INPUT_FF_HAPTICS := true
 AERA_LOAD_VENDOR_BOOT_MODULES := true
 AERA_NO_LEGACY_PROPS := true
 
@@ -202,7 +210,7 @@ AERA_HAS_EDL_MODE := false
 AERA_USE_SERIALNO_PROPERTY_FOR_DEVICE_ID := true
 AERA_CUSTOM_CPU_TEMP_PATH := "/sys/class/thermal/thermal_zone45/temp"
 AERA_EXTRA_LANGUAGES := true
-AERA_DEFAULT_LANGUAGE := en
+AERA_DEFAULT_LANGUAGE := zh-CN
 AERA_DEVICE_VERSION := LENOVO_Y70_AVR
 AERA_INCLUDE_OMAPI := true
 HAVE_SELINUX := true
