@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <!-- Mainline modules: recovery doesn't need -->
+    <remove-project path="packages/modules/ad_services" />
+    <remove-project path="packages/modules/Bluetooth" />
+    <remove-project path="packages/modules/ConnectedDevice" />
+    <remove-project path="packages/modules/Connectivity" />
+    <remove-project path="packages/modules/Contexthub" />
+    <remove-project path="packages/modules/Media" />
+    <remove-project path="packages/modules/Nearby" />
+    <remove-project path="packages/modules/NeuralNetworks" />
+    <remove-project path="packages/modules/OnDeviceIntelligence" />
+    <remove-project path="packages/modules/Permission" />
+    <remove-project path="packages/modules/ResCpl" />
+    <remove-project path="packages/modules/Runtime" />
+    <remove-project path="packages/modules/SafetyRegulator" />
+    <remove-project path="packages/modules/Scheduling" />
+    <remove-project path="packages/modules/StatsD" />
+    <remove-project path="packages/modules/Tethering" />
+    <remove-project path="packages/modules/TvProvider" />
+    <remove-project path="packages/modules/Wifi" />
+
+    <!-- Mainline SDK prebuilts -->
+    <remove-project path="prebuilts/module_sdk" />
+
+    <!-- Python third-party libs: recovery build doesn't need -->
+    <remove-project path="external/python/cpython3" />
+    <remove-project path="external/python/grpcio" />
+    <remove-project path="external/python/packaging" />
+    <remove-project path="external/python/pkg_resources" />
+    <remove-project path="external/python/proto" />
+    <remove-project path="external/python/pyasn1" />
+    <remove-project path="external/python/pyasn1_modules" />
+    <remove-project path="external/python/setuptools" />
+
+    <!-- Rust: recovery doesn't build rust components -->
+    <remove-project path="external/rust" />
+
+    <!-- Kernel prebuilts: already moved to Release -->
+    <remove-project path="kernel/prebuilts" />
+
+    <!-- Trusty TEE: not needed -->
+    <remove-project path="external/trusty" />
+    <remove-project path="prebuilts/vndk" />
+
+    <!-- NXP NFC: not needed -->
+    <remove-project path="hardware/nxp" />
+
+    <!-- Screensavers, providers: not needed -->
+    <remove-project path="packages/screensavers" />
+    <remove-project path="packages/providers" />
+
+    <!-- Bluetooth test -->
+    <remove-project path="external/pandora" />
+
+    <!-- Test / tradefederation / netsim: not needed -->
+    <remove-project path="tools/tradefederation" />
+    <remove-project path="tools/test" />
+    <remove-project path="tools/netsim" />
+    <remove-project path="tools/loganalysis" />
+    <remove-project path="tools/content_addressed_storage" />
+
+    <!-- System memory (large, not needed for recovery) -->
+    <remove-project path="system/memory" />
+</manifest>
