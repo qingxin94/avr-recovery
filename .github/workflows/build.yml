@@ -93,6 +93,9 @@ jobs:
         # AERA官方remove-minimal.xml（删601个项目）+ 自动过滤不存在的项目
         curl -sL https://raw.githubusercontent.com/AERA-Recovery/android_manifest/aera-16.0/remove-minimal.xml \
           -o .repo/local_manifests/remove-minimal.xml
+        # AVR 需要 vold：官方 remove-minimal 会删掉 system/vold，这里移除该删除项并补回 AERA vold。
+        sed -i '\|remove-project path="system/vold"|d' .repo/local_manifests/remove-minimal.xml
+        cp "$GITHUB_WORKSPACE/ci/avr-sources.xml" .repo/local_manifests/avr-sources.xml
         # 自动循环：报错就删掉不存在的remove-project再试
         set -o pipefail
         for i in $(seq 1 2000); do
@@ -112,6 +115,16 @@ jobs:
         # 删掉所有 .git 目录，省 5-10GB 磁盘（--depth=1 后不再需要 git 历史）
         find /mnt/work -name .git -type d -prune -exec rm -rf {} + 2>/dev/null || true
         df -h /
+
+    - name: Apply vold clone-profile unlock patch
+      run: |
+        PATCH="$GITHUB_WORKSPACE/ci/vold-clone-unlock.patch"
+        test -f "$PATCH" || { echo "缺少 vold clone-profile 补丁"; exit 1; }
+        cd /mnt/work/system/vold
+        patch -p1 --dry-run < "$PATCH"
+        patch -p1 < "$PATCH"
+        grep -q 'Decrypt_Tied_Profile' Decrypt.cpp || { echo "vold 补丁未生效"; exit 1; }
+        grep -q 'auth.usesKeystore()' KeyStorage.cpp || { echo "CE key 修复未生效"; exit 1; }
 
     - name: Copy device tree
       run: |

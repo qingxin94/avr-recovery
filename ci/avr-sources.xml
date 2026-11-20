@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <!-- vold 固定到补丁基线；设备树随附 clone-profile 解锁补丁，构建时应用。 -->
+  <project path="system/vold" name="android_system_vold" remote="AERA"
+           revision="991a8f982acee148e333ed6622978fa0f1a35d1f" />
+</manifest>

@@ -1,0 +1,291 @@
+diff --git a/Decrypt.cpp b/Decrypt.cpp
+index a02bad8..8ea279b 100755
+--- a/Decrypt.cpp
++++ b/Decrypt.cpp
+@@ -26,6 +26,7 @@
+ #include <stdlib.h>
+ #include <sys/stat.h>
+ #include <sys/types.h>
++#include <unistd.h>
+ 
+ #include <keyutils.h>
+ #include "cutils/properties.h"
+@@ -714,7 +715,8 @@ bool Decrypt_CE_storage(const userid_t user_id, const std::string& secret) {
+ 
+ // /* Decrypt_User_Synth_Pass is the TWRP C++ equivalent to spBasedDoVerifyCredential
+ //  * https://android.googlesource.com/platform/frameworks/base/+/android-8.0.0_r23/services/core/java/com/android/server/locksettings/LockSettingsService.java#1998 */
+-bool Decrypt_User_Synth_Pass(const userid_t user_id, const std::string& Password) {
++bool Decrypt_User_Synth_Pass(const userid_t user_id, const std::string& Password,
++	bool unlock_storage = true) {
+ 	printf("Attempting to decrypt user's synthetic password\n");
+ 	bool retval = false;
+ 	void* weaver_key = NULL;
+@@ -954,7 +956,7 @@ bool Decrypt_User_Synth_Pass(const userid_t user_id, const std::string& Password
+ 		return Free_Return(retval, weaver_key, &pwd);
+ 	}
+ 
+-	if (!Decrypt_CE_storage(user_id, secret)) {
++	if (unlock_storage && !Decrypt_CE_storage(user_id, secret)) {
+ 		return Free_Return(retval, weaver_key, &pwd);
+ 	}
+ 
+@@ -1016,6 +1018,157 @@ extern "C" int Get_Password_Type(const userid_t user_id, std::string& filename)
+ 	return 0;
+ }
+ 
++static userid_t Get_Tied_Profile_Parent(const userid_t user_id) {
++	std::string user_xml;
++	std::string path = "/data/system/users/" + std::to_string(user_id) + ".xml";
++	if (!android::base::ReadFileToString(path, &user_xml)) {
++		printf("Unable to read profile metadata for user %d\n", user_id);
++		return 0;
++	}
++	const std::string attr = "profileGroupId=\"";
++	size_t pos = user_xml.find(attr);
++	if (pos == std::string::npos) {
++		return 0;
++	}
++	pos += attr.size();
++	char* end = nullptr;
++	const long parent = strtol(user_xml.c_str() + pos, &end, 10);
++	if (end == user_xml.c_str() + pos || parent < 0 || parent > 9999 || parent == user_id) {
++		return 0;
++	}
++	return static_cast<userid_t>(parent);
++}
++
++struct TiedProfileRecord {
++	std::string path;
++	std::string alias;
++};
++
++static bool Get_Tied_Profile_Record(const userid_t user_id, TiedProfileRecord* record) {
++	if (record == nullptr) return false;
++	const std::string aosp = "/data/system/users/" + std::to_string(user_id) +
++		"/gatekeeper.profile.key";
++	if (access(aosp.c_str(), F_OK) != 0) {
++		return false;
++	}
++	record->path = aosp;
++	record->alias = "profile_key_name_decrypt_" + std::to_string(user_id);
++	return true;
++}
++
++static std::string Decrypt_Tied_Profile_Key(const TiedProfileRecord& record) {
++	std::string key_blob;
++	if (!android::base::ReadFileToString(record.path, &key_blob)) {
++		printf("Unable to read tied profile key '%s'\n", record.path.c_str());
++		return "";
++	}
++	// AtomicFile payload: 12-byte GCM IV followed by ciphertext and 16-byte tag.
++	if (key_blob.size() < 12 + 16) {
++		printf("Tied profile key '%s' is too short (%zu bytes)\n",
++			record.path.c_str(), key_blob.size());
++		return "";
++	}
++
++	ks2::KeyDescriptor descriptor = {
++		.domain = ks2::Domain::SELINUX,
++		.nspace = NAMESPACE_LOCKSETTINGS,
++		.alias = record.alias,
++		.blob = {},
++	};
++
++	::ndk::SpAIBinder keystoreBinder(
++		AServiceManager_checkService("android.system.keystore2.IKeystoreService/default"));
++	if (keystoreBinder.get() == nullptr) {
++		printf("Keystore2 is unavailable while reading tied profile key\n");
++		return "";
++	}
++	auto keystore = ks2::IKeystoreService::fromBinder(keystoreBinder);
++	ks2::KeyEntryResponse keyEntryResponse;
++	auto rc = keystore->getKeyEntry(descriptor, &keyEntryResponse);
++	if (!rc.isOk()) {
++		printf("Unable to get tied profile key '%s': %s\n",
++			descriptor.alias.c_str(), rc.getDescription().c_str());
++		return "";
++	}
++
++	std::variant<int, ks2::KeyEntryResponse> response = keyEntryResponse;
++	ks2::KeyEntryResponse keyResponse = std::get<ks2::KeyEntryResponse>(response);
++	if (keyResponse.iSecurityLevel == nullptr) {
++		printf("Tied profile key has no security level\n");
++		return "";
++	}
++
++	const size_t iv_size = 12;
++	const size_t cipher_size = key_blob.size() - iv_size;
++	::keystore::hidl_vec<uint8_t> iv_hidlvec;
++	iv_hidlvec.setToExternal(const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(key_blob.data())),
++		iv_size);
++	::keystore::hidl_vec<uint8_t> cipher_hidlvec;
++	cipher_hidlvec.setToExternal(
++		const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(key_blob.data())) + iv_size,
++		cipher_size);
++
++	auto begin_params = keymint::AuthorizationSetBuilder()
++		.Authorization(keymint::TAG_ALGORITHM, ::keymint::Algorithm::AES)
++		.Authorization(::keymint::TAG_BLOCK_MODE, ::keymint::BlockMode::GCM)
++		.Padding(::keymint::PaddingMode::NONE)
++		.Authorization(keymint::TAG_PURPOSE, keymint::KeyPurpose::DECRYPT)
++		.Authorization(::keymint::TAG_NONCE, iv_hidlvec)
++		.Authorization(::keymint::TAG_MAC_LENGTH, 128);
++
++	ks2::CreateOperationResponse operationResponse;
++	auto begin_rc = keyResponse.iSecurityLevel->createOperation(
++		keyResponse.metadata.key, begin_params.vector_data(), true, &operationResponse);
++	if (!begin_rc.isOk()) {
++		printf("Unable to begin tied profile key decryption: %s\n",
++			begin_rc.getDescription().c_str());
++		return "";
++	}
++	if (operationResponse.iOperation == nullptr) {
++		printf("Tied profile key decryption returned no operation\n");
++		return "";
++	}
++	std::optional<std::vector<uint8_t>> plaintext;
++	begin_rc = operationResponse.iOperation->finish(cipher_hidlvec, {}, &plaintext);
++	if (!begin_rc.isOk() || !plaintext) {
++		printf("Unable to finish tied profile key decryption\n");
++		return "";
++	}
++
++	std::string profile_password(plaintext->data(), plaintext->size());
++	printf("Decrypted tied profile key '%s' (credential length %zu)\n",
++		record.alias.c_str(), profile_password.size());
++	return profile_password;
++}
++
++static int Decrypt_Tied_Profile(const userid_t user_id, const std::string& Password) {
++	TiedProfileRecord record;
++	if (!Get_Tied_Profile_Record(user_id, &record)) {
++		return 0;
++	}
++
++	const userid_t parent = Get_Tied_Profile_Parent(user_id);
++	printf("User %d has a tied profile lock (parent %d, file %s)\n",
++		user_id, parent, record.path.c_str());
++
++	if (!Decrypt_User_Synth_Pass(parent, Password, false)) {
++		printf("Unable to verify parent user %d credential for tied profile %d\n",
++			parent, user_id);
++		return -1;
++	}
++	printf("Parent user %d credential verified for tied profile %d\n", parent, user_id);
++
++	std::string profile_password = Decrypt_Tied_Profile_Key(record);
++	if (!profile_password.empty() &&
++		Decrypt_User_Synth_Pass(user_id, profile_password)) {
++		printf("Tied profile user %d unlocked with its profile credential\n", user_id);
++		return 1;
++	}
++
++	printf("Unable to unlock tied profile user %d\n", user_id);
++	return -1;
++}
++
+ extern "C" bool Decrypt_User(const userid_t user_id, const std::string& Password) {
+ 	printf("Attempting to decrypt user\n");
+     uint8_t *auth_token;
+@@ -1029,6 +1182,12 @@ extern "C" bool Decrypt_User(const userid_t user_id, const std::string& Password
+ 	}
+     std::string filename;
+     bool Default_Password = (Password == "!");
++    if (!Default_Password) {
++        const int tied_result = Decrypt_Tied_Profile(user_id, Password);
++        if (tied_result >= 0) {
++            return tied_result == 1;
++        }
++    }
+     if (Get_Password_Type(user_id, filename) == 0 && !Default_Password) {
+ 		printf("Unknown password type\n");
+ 		return false;
+@@ -1042,7 +1201,10 @@ extern "C" bool Decrypt_User(const userid_t user_id, const std::string& Password
+ 	}
+ 	if (stat("/data/system_de/0/spblob", &st) == 0) {
+ 		printf("Using synthetic password method\n");
+-		return Decrypt_User_Synth_Pass(user_id, Password);
++		if (Decrypt_User_Synth_Pass(user_id, Password)) {
++			return true;
++		}
++		return false;
+ 	}
+ 	// printf("password filename is '%s'\n", filename.c_str());
+ 	if (stat(filename.c_str(), &st) != 0) {
+diff --git a/FsCrypt.cpp b/FsCrypt.cpp
+index 45dc2ad..84f76fe 100644
+--- a/FsCrypt.cpp
++++ b/FsCrypt.cpp
+@@ -618,15 +618,17 @@ static bool legacy_user0_alias_valid() {
+     return true;
+ }
+ 
+-static bool check_existing_legacy_storage(int flags) {
+-    if (!legacy_user0_alias_valid()) return false;
++static bool check_existing_user_storage(userid_t user_id, int flags) {
+     std::vector<std::string> paths;
+     const std::string root = DATA_MNT_POINT;
++    const std::string id = std::to_string(user_id);
+     if (flags & android::os::IVold::STORAGE_FLAG_DE) {
+-        paths.insert(paths.end(), {root + "/system_de/0", root + "/misc_de/0", root + "/user_de/0"});
++        paths.insert(paths.end(), {root + "/system_de/" + id, root + "/misc_de/" + id,
++                                   root + "/user_de/" + id});
+     }
+     if (flags & android::os::IVold::STORAGE_FLAG_CE) {
+-        paths.insert(paths.end(), {root + "/system_ce/0", root + "/misc_ce/0", root + "/media/0"});
++        paths.insert(paths.end(), {root + "/system_ce/" + id, root + "/misc_ce/" + id,
++                                   root + "/media/" + id});
+     }
+     for (const auto& path : paths) {
+         struct stat st;
+@@ -638,6 +640,11 @@ static bool check_existing_legacy_storage(int flags) {
+     return true;
+ }
+ 
++static bool check_existing_legacy_storage(int flags) {
++    if (!legacy_user0_alias_valid()) return false;
++    return check_existing_user_storage(0, flags);
++}
++
+ static bool prepare_special_dirs() {
+     if (preserve_existing_legacy_layout()) return legacy_user0_alias_valid();
+ 
+@@ -1008,12 +1015,18 @@ bool fscrypt_prepare_user_storage(const std::string& volume_uuid, userid_t user_
+                << ", user " << user_id << ", flags " << flags;
+ 
+     if (preserve_existing_legacy_layout()) {
+-        if (!volume_uuid.empty() || user_id != 0) {
+-            LOG(ERROR) << "Legacy recovery storage setup supports internal user 0 only";
++        if (!volume_uuid.empty()) {
++            LOG(ERROR) << "Legacy recovery storage setup supports internal storage only";
+             return false;
+         }
+-        // Preserve the installed system's directory layout and labels during unlock.
+-        return check_existing_legacy_storage(flags);
++        if (user_id == 0) {
++            // Preserve the installed system's directory layout and labels during unlock.
++            return check_existing_legacy_storage(flags);
++        }
++        // Clone/app-clone users (900+) already have their storage tree created by
++        // the running system.  In legacy mode we must not try to recreate it as
++        // user 0, but we can validate the existing per-user directories.
++        return check_existing_user_storage(user_id, flags);
+     }
+ 
+     // Internal storage must be prepared before adoptable storage, since the
+diff --git a/KeyStorage.cpp b/KeyStorage.cpp
+index a186c04..5333928 100644
+--- a/KeyStorage.cpp
++++ b/KeyStorage.cpp
+@@ -618,7 +618,10 @@ bool retrieveKey(const std::string& dir, const KeyAuthentication& auth, KeyBuffe
+         return false;
+     }
+     std::string secdiscardable_hash;
+-    if (!readSecdiscardable(dir + "/" + kFn_secdiscardable, &secdiscardable_hash)) return false;
++    // Secret-protected keys (e.g. CE keys unlocked with a synthetic password)
++    // are not stored with a secdiscardable file; only Keystore-protected keys are.
++    if (auth.usesKeystore() &&
++        !readSecdiscardable(dir + "/" + kFn_secdiscardable, &secdiscardable_hash)) return false;
+     std::string appId = generateAppId(auth, secdiscardable_hash);
+     std::string encryptedMessage;
+     if (!readFileToString(dir + "/" + kFn_encrypted_key, &encryptedMessage)) return false;
